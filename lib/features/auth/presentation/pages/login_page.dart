@@ -61,10 +61,12 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             // Lottie animation with dynamic frame rate adjustment
             Lottie.asset(
-              'assets/loginanimation.json',
-              height: 120,
-              width: 120,
-              frameRate: FrameRate(30.0 + (_typingSpeed / 2)), // Adjust frame rate dynamically
+              'assets/3d.json',
+              // height: 120,
+              // width: 120,
+              // frameRate: FrameRate(30.0 + (_typingSpeed / 2)), // Adjust frame rate dynamically
+              // frameRate: FrameRate(600.0), // Adjust frame rate dynamically
+
             ),
             const SizedBox(height: 25),
 
