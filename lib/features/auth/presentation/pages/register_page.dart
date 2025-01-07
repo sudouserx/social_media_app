@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:social_media_app/features/auth/presentation/components/my_button.dart';
 import 'package:social_media_app/features/auth/presentation/components/my_textfield.dart';
+import 'package:social_media_app/features/auth/presentation/cubits/auth_cubit.dart';
 
 class RegisterPage extends StatefulWidget {
-  // void Function()? onTap;
+  void Function()? onTap;
 
-  // RegisterPage({super.key, required this.onTap});
-  RegisterPage({super.key});
+  RegisterPage({super.key, required this.onTap});
+  // RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -14,12 +17,45 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   // text editing controllers
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  void register() async {}
+  void register() async {
+    final String name = nameController.text;
+    final String email = emailController.text;
+    final String pw = passwordController.text;
+    final String cpw = confirmPasswordController.text;
+
+    // auth cubit
+    final AuthCubit authCubit = context.read<AuthCubit>();
+
+    // check the email and password fields aren't empty
+    if (email.isNotEmpty && pw.isNotEmpty & name.isNotEmpty && cpw.isNotEmpty) {
+      if (pw == cpw) {
+        await authCubit.register(name, email, pw);
+      } else {
+        // show error of field empty
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Passwords do not match!")));
+      }
+    } else {
+      // show error of field empty
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please complete all fields!")));
+    }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +66,12 @@ class _RegisterPageState extends State<RegisterPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // logo
-            Icon(
-              Icons.lock_open_rounded,
-              size: 100,
-              color: Theme.of(context).colorScheme.inversePrimary,
+            Lottie.asset(
+              'assets/loginanimation.json',
+              height: 200,
+              width: 200,
             ),
-            const SizedBox(
-              height: 25,
-            ),
-
+            const SizedBox(height: 25),
             //message , app slogan
             Text(
               "Let's Create an Account for you",
@@ -48,6 +81,15 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
 
+            const SizedBox(
+              height: 25,
+            ),
+
+            // name textfield
+            MyTextField(
+                controller: nameController,
+                hintText: "Name",
+                obscureText: false),
             const SizedBox(
               height: 25,
             ),
@@ -80,7 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
 
             // register button
-            MyButton(onTap: register, text: "Sign Up"),
+            MyButton(onTap: register, text: "Register"),
             const SizedBox(
               height: 25,
             ),
@@ -98,8 +140,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   width: 4,
                 ),
                 GestureDetector(
-                  // onTap: widget.onTap,
-                  onTap: () {},
+                  onTap: widget.onTap,
+                  // onTap: () {},
                   child: Text(
                     "Login now",
                     style: TextStyle(

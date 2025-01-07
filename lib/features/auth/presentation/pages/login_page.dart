@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:social_media_app/features/auth/presentation/components/my_button.dart';
 import 'package:social_media_app/features/auth/presentation/components/my_textfield.dart';
+import 'package:social_media_app/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:social_media_app/features/auth/presentation/pages/register_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  void Function()? onTap;
+  LoginPage({super.key, required this.onTap});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -15,40 +19,29 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // Variables for typing speed calculation
-  late DateTime _lastChangeTime = DateTime.now();
-  double _typingSpeed = 0.0;
+  // Login method
+  void login() async {
+    final String email = emailController.text;
+    final String pw = passwordController.text;
 
-  @override
-  void initState() {
-    super.initState();
-    emailController.addListener(() {
-      final currentTime = DateTime.now();
-      final timeDiff = currentTime.difference(_lastChangeTime).inMilliseconds;
+    // auth cubit
+    final AuthCubit authCubit = context.read<AuthCubit>();
 
-      // Calculate typing speed, with a floor value of 0 and a cap of 100.
-      if (timeDiff > 0) {
-        _typingSpeed = (1000 / timeDiff) * emailController.text.characters.length;
-        _typingSpeed = _typingSpeed.clamp(0, 100);
-      }
-
-      _lastChangeTime = currentTime;
-
-      setState(() {});
-    });
+    // check the email and password fields aren't empty
+    if (email.isNotEmpty && pw.isNotEmpty) {
+      await authCubit.login(email, pw);
+    } else {
+      // show error of field empty
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Please enter both email and password!")));
+    }
   }
 
   @override
   void dispose() {
-    // Dispose of controllers to prevent memory leaks
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-  }
-
-  // Login method
-  void login() async {
-    // Future implementation for login logic
   }
 
   @override
@@ -59,14 +52,10 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Lottie animation with dynamic frame rate adjustment
             Lottie.asset(
-              'assets/3d.json',
-              // height: 120,
-              // width: 120,
-              // frameRate: FrameRate(30.0 + (_typingSpeed / 2)), // Adjust frame rate dynamically
-              // frameRate: FrameRate(600.0), // Adjust frame rate dynamically
-
+              'assets/loginanimation.json',
+              height: 200,
+              width: 200,
             ),
             const SizedBox(height: 25),
 
@@ -112,9 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(width: 4),
                 GestureDetector(
-                  onTap: () {
-                    // Navigation logic to register page
-                  },
+                  onTap: widget.onTap,
                   child: Text(
                     "Register now?",
                     style: TextStyle(
