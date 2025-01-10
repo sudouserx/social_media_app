@@ -4,7 +4,8 @@ import 'package:social_media_app/features/auth/data/firebase_auth_repo.dart';
 import 'package:social_media_app/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:social_media_app/features/auth/presentation/cubits/auth_states.dart';
 import 'package:social_media_app/features/auth/presentation/pages/auth_page.dart';
-import 'package:social_media_app/features/post/presentation/pages/home_page.dart';
+import 'package:social_media_app/features/home/presentation/pages/home_page.dart';
+import 'package:social_media_app/themes/dark_mode.dart';
 import 'package:social_media_app/themes/light_mode.dart';
 
 /**
@@ -41,11 +42,10 @@ class MyApp extends StatelessWidget {
       create: (context) => AuthCubit(authRepo: authRepo)..checkAuth(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: lightMode,
+        theme: darkMode,
         home: Scaffold(
           body:
               BlocConsumer<AuthCubit, AuthState>(builder: (context, authState) {
-            print(authState);
             if (authState is Unauthenticated) {
               return const AuthPage();
             }
@@ -60,9 +60,9 @@ class MyApp extends StatelessWidget {
                 ),
               );
             }
-          }, 
-          // listen for any error while we login
-          listener: (context, state) {
+          },
+                  // listen for any error while we login
+                  listener: (context, state) {
             if (state is AuthError) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.message)));

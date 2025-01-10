@@ -54,7 +54,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       // signin
       final AppUser? user =
-          await authRepo.registerWithEmailPassword(email, password, name);
+          await authRepo.registerWithEmailPassword(name, email, password);
 
       if (user != null) {
         _currentUser = user;
